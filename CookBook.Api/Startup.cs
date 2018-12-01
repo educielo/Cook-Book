@@ -110,14 +110,13 @@ namespace CookBook.Api
         {
             if (env.IsDevelopment())
             {
+                dbContext.Database.EnsureCreated();
                 app.UseDeveloperExceptionPage();
             }
             else
             {
                 app.UseHsts();
-            }
-
-            dbContext.Database.EnsureCreated();
+            }           
             app.UseHttpsRedirection();
             app.UseSwagger();
             app.UseSwaggerUi3WithApiExplorer(settings =>

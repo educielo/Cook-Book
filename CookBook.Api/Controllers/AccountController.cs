@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using CookBook.Api.Models;
 using CookBook.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -16,7 +16,7 @@ using Microsoft.IdentityModel.Tokens;
 namespace CookBook.Web.Controllers
 {
     [Route("[controller]/[action]")]
-    public class AccountController : ControllerBase
+    public partial class AccountController : ControllerBase
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
@@ -34,7 +34,7 @@ namespace CookBook.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<object> Login([FromBody] LoginDto model)
+        public async Task<object> Login([FromBody] Login model)
         {
             var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, false, false);
 
@@ -48,7 +48,7 @@ namespace CookBook.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<object> Register([FromBody] RegisterDto model)
+        public async Task<object> Register([FromBody] Register model)
         {
             var user = new ApplicationUser
             {
@@ -89,28 +89,6 @@ namespace CookBook.Web.Controllers
             );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
-        }
-
-        public class LoginDto
-        {
-            [Required]
-            public string Email { get; set; }
-
-            [Required]
-            public string Password { get; set; }
-
-        }
-
-        public class RegisterDto
-        {
-            [Required]
-            public string Email { get; set; }
-            [Required]
-            public string FullName { get; set; }
-
-            [Required]
-            [StringLength(100, ErrorMessage = "PASSWORD_MIN_LENGTH", MinimumLength = 6)]
-            public string Password { get; set; }
         }
     }
 }
