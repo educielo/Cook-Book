@@ -16,7 +16,7 @@ namespace CookBook.Models.Configurations
 
             builder.HasMany(t => t.Ingredients)
                 .WithOne(t => t.Recipe)
-                .HasForeignKey(a => a.RecipeId);
+                .HasForeignKey(a => a.RecipeId).OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

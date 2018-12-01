@@ -10,7 +10,7 @@ import { HomeComponent } from './home/home.component';
 import { CounterComponent } from './counter/counter.component';
 import { FetchDataComponent } from './fetch-data/fetch-data.component';
 import { MyRecipeComponent } from './my-recipes/my-recipes.component';
-
+import { RecipeComponent } from './recipes/recipes.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -18,7 +18,8 @@ import { MyRecipeComponent } from './my-recipes/my-recipes.component';
     HomeComponent,
     CounterComponent,
     FetchDataComponent,
-    MyRecipeComponent
+    MyRecipeComponent,
+    RecipeComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -28,6 +29,8 @@ import { MyRecipeComponent } from './my-recipes/my-recipes.component';
       { path: '', component: HomeComponent, pathMatch: 'full' },
       { path: 'counter', component: CounterComponent },
       { path: 'fetch-data', component: FetchDataComponent },
+      { path: 'recipes', component: RecipeComponent },
+      { path: 'my-recipes', component: MyRecipeComponent },
     ])
   ],
   providers: [],

@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace CookBook.Api.Models
 {
-    public class Recipe
+    public class IngredientViewModel
     {
         public int Id { get; set; }
         [Required]
-        public string RecipeName { get; set; }
-        public string Description { get; set; }
-
+        public string IngredientName { get; set; }
+        [Required]
+        public int RecipeId { get; set; }
     }
 }

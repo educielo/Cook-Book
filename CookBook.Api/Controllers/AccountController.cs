@@ -15,7 +15,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace CookBook.Web.Controllers
 {
-    [Route("[controller]/[action]")]
+    [Route("api/[controller]")]
     public partial class AccountController : ControllerBase
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
@@ -34,6 +34,7 @@ namespace CookBook.Web.Controllers
         }
 
         [HttpPost]
+        [Route("[action]")]
         public async Task<object> Login([FromBody] Login model)
         {
             var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, false, false);
@@ -48,6 +49,7 @@ namespace CookBook.Web.Controllers
         }
 
         [HttpPost]
+        [Route("[action]")]
         public async Task<object> Register([FromBody] Register model)
         {
             var user = new ApplicationUser

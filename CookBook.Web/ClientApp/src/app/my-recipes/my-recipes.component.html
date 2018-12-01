@@ -2,23 +2,23 @@
 
 <p>This are the list of your recipes.</p>
 
-<p *ngIf="!forecasts"><em>Loading...</em></p>
+<p *ngIf="!recipes"><em>Loading...</em></p>
 
-<table class='table' *ngIf="forecasts">
+<table class='table' *ngIf="recipes">
   <thead>
     <tr>
-      <th>Date</th>
-      <th>Temp. (C)</th>
-      <th>Temp. (F)</th>
-      <th>Summary</th>
+      <th>Name</th>
+      <th>Description</th>
+      <th>Created By</th>
+      <th>Creation Date</th>
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let forecast of forecasts">
-      <td>{{ forecast.dateFormatted }}</td>
-      <td>{{ forecast.temperatureC }}</td>
-      <td>{{ forecast.temperatureF }}</td>
-      <td>{{ forecast.summary }}</td>
+    <tr *ngFor="let recipe of recipes">
+      <td>{{ recipe.recipeName }}</td>
+      <td>{{ recipe.description }}</td>
+      <td>{{ recipe.creator }}</td>
+      <td>{{ recipe.creationDate }}</td>
     </tr>
   </tbody>
 </table>

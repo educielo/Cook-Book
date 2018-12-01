@@ -1,23 +1,33 @@
 import { Component, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { strictEqual } from 'assert';
 
 @Component({
-  selector: 'app-my-recipe',
+  selector: 'app-recipe',
   templateUrl: './my-recipes.component.html'
 })
 export class MyRecipeComponent {
-  public forecasts: Recipes[];
+  public recipes: Recipes[];
 
-  constructor(http: HttpClient, @Inject('BASE_URL') baseUrl: string) {
-    http.get<Recipes[]>(baseUrl + 'api/SampleData/WeatherForecasts').subscribe(result => {
-      this.forecasts = result;
+  constructor(http: HttpClient) {
+    http.get<Recipes[]>('https://localhost:44328/api/Recipes/GetAllRecipes/').subscribe(result => {
+      console.log(result);
+      this.recipes = result;
+
     }, error => console.error(error));
   }
 }
 
 interface Recipes {
-  dateFormatted: string;
-  temperatureC: number;
-  temperatureF: number;
-  summary: string;
+  id: string;
+  recipeName: string;
+  creationDate: string;
+  description: string;
+  creator: string;
+}
+
+interface Ingredient {
+  id: number;
+  ingredientName: string;
+  recipeId: number;
 }

@@ -62,7 +62,7 @@ namespace CookBook.Api
             services.AddTransient<IRecipeService, RecipeService>();
             services.AddTransient<IRepositoryAsync<Ingredient>, Repository<Ingredient>>();
             services.AddTransient<IIngredientService, IngredientService>();
-
+            services.AddCors();
             // ===== Add Jwt Authentication ========
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear(); // => remove default claims
             services
@@ -128,7 +128,14 @@ namespace CookBook.Api
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "CookBook Api");
             });
+            app.UseCors(builder => builder
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials());
+            
             app.UseMvc();
+
         }
     }
 }
