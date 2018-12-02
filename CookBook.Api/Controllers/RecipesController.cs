@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace CookBook.Api.Controllers
@@ -25,16 +26,18 @@ namespace CookBook.Api.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         [Route("[action]")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         public async Task<IActionResult> Create([FromBody] RecipeViewModel recipe)
         {
+            string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var newRecipe = new CookBook.Models.Entities.Recipe()
             {
                 RecipeName = recipe.RecipeName,
                 CreationDate = DateTime.Now,
                 Description = recipe.Description,
-                Creator ="educielo0604@gmail.com",
+                Creator = userId,
             };
             _recipeService.Insert(newRecipe);
             await _unitOfWorkAsync.SaveChangesAsync();
@@ -98,7 +101,27 @@ namespace CookBook.Api.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK)]
         public IActionResult GetAllRecipes()
         {
+            string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var recipes =  _recipeService.Query().Select(a => new Recipe()
+            {
+                CreationDate = a.CreationDate.ToString(),
+                Creator = a.Creator,
+                Description = a.Description,
+                Id = a.Id,
+                Ingredients = a.Ingredients,
+                RecipeName = a.RecipeName,
+            });
+            return Ok(recipes);
+        }
+
+        [HttpGet]
+        [Authorize]
+        [Route("[action]")]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        public IActionResult GetMyRecipes()
+        {
+            string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var recipes = _recipeService.Query(a=>a.Creator == userId).Select(a => new Recipe()
             {
                 CreationDate = a.CreationDate.ToString(),
                 Creator = a.Creator,
