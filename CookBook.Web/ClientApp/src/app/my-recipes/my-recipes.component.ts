@@ -1,33 +1,23 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { strictEqual } from 'assert';
-
+import { Recipe } from '../_models';
+import { RecipeService } from '../_services';
+import { Router, ActivatedRoute } from '@angular/router';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Observable } from 'rxjs';
 @Component({
-  selector: 'app-recipe',
+  selector: 'app-myrecipes',
   templateUrl: './my-recipes.component.html'
 })
-export class MyRecipeComponent {
-  public recipes: Recipes[];
+export class MyRecipeComponent implements OnInit {
+  public recipes: Recipe[];
 
-  constructor(http: HttpClient) {
-    http.get<Recipes[]>('https://localhost:44328/api/Recipes/GetAllRecipes/').subscribe(result => {
-      console.log(result);
-      this.recipes = result;
+  constructor(
+    private recipeService: RecipeService,
 
-    }, error => console.error(error));
+  ) {}
+  ngOnInit() {
+    this.recipeService.getMyRecipes().subscribe(res => this.recipes = res)
   }
-}
-
-interface Recipes {
-  id: string;
-  recipeName: string;
-  creationDate: string;
-  description: string;
-  creator: string;
-}
-
-interface Ingredient {
-  id: number;
-  ingredientName: string;
-  recipeId: number;
 }

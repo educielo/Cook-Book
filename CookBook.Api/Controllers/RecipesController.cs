@@ -1,5 +1,6 @@
 ﻿using CookBook.Api.Models;
 using CookBook.Service;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Repository.Pattern.UnitOfWork;
@@ -13,6 +14,7 @@ using System.Threading.Tasks;
 namespace CookBook.Api.Controllers
 {
     //[Authorize]
+    [ApiController]
     [Route("api/[controller]")]  
     public class RecipesController : ControllerBase
     {
@@ -104,7 +106,7 @@ namespace CookBook.Api.Controllers
             string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var recipes =  _recipeService.Query().Select(a => new Recipe()
             {
-                CreationDate = a.CreationDate.ToString(),
+                CreationDate = a.CreationDate.ToShortDateString(),
                 Creator = a.Creator,
                 Description = a.Description,
                 Id = a.Id,
@@ -115,12 +117,12 @@ namespace CookBook.Api.Controllers
         }
 
         [HttpGet]
-        [Authorize]
         [Route("[action]")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public IActionResult GetMyRecipes()
         {
-            string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            string userId = User.Claims.First()?.Value;
             var recipes = _recipeService.Query(a=>a.Creator == userId).Select(a => new Recipe()
             {
                 CreationDate = a.CreationDate.ToString(),

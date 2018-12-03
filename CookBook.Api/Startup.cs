@@ -8,8 +8,11 @@ using CookBook.Models;
 using CookBook.Models.Entities;
 using CookBook.Service;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -19,6 +22,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using NJsonSchema;
 using NSwag.AspNetCore;
 using Repository.Pattern.Core;
@@ -49,7 +53,7 @@ namespace CookBook.Api
                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Scoped);
             
             services.AddScoped<IDataContextAsync, CookBookContext>();
-
+            services.AddHttpContextAccessor();
             //-- UnitofWork--//
             services.AddScoped<IUnitOfWorkAsync, UnitOfWork>();
             services.AddIdentity<ApplicationUser, IdentityRole>(options =>
@@ -65,26 +69,33 @@ namespace CookBook.Api
             services.AddCors();
             // ===== Add Jwt Authentication ========
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear(); // => remove default claims
+            services.AddAuthorization(auth =>
+            {
+                auth.AddPolicy("Bearer", new AuthorizationPolicyBuilder()
+                    .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
+                    .RequireAuthenticatedUser().Build());
+            });
             services
                 .AddAuthentication(options =>
                 {
-                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-
                 })
                 .AddJwtBearer(cfg =>
                 {
-                    cfg.RequireHttpsMetadata = false;
-                    cfg.SaveToken = true;
+                    var keyByteArray = Encoding.ASCII.GetBytes(Configuration["JwtKey"]);
+                    var signingKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(keyByteArray);
+                    
                     cfg.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidIssuer = Configuration["JwtIssuer"],
-                        ValidAudience = Configuration["JwtIssuer"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtKey"])),
+                        ValidAudience = "Audience",
+                        ValidateIssuerSigningKey = true,
+                        ValidateLifetime = true,
+                        IssuerSigningKey = signingKey,
                         ClockSkew = TimeSpan.Zero // remove delay of token when expire
                     };
                 });
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddSwagger();
             services.AddSwaggerGen(c =>
@@ -116,7 +127,40 @@ namespace CookBook.Api
             else
             {
                 app.UseHsts();
-            }           
+            }
+            app.UseExceptionHandler(appBuilder =>
+            {
+                appBuilder.Use(async (context, next) =>
+                {
+                    var error = context.Features[typeof(IExceptionHandlerFeature)] as IExceptionHandlerFeature;
+
+                    //when authorization has failed, should retrun a json message to client
+                    if (error != null && error.Error is SecurityTokenExpiredException)
+                    {
+                        context.Response.StatusCode = 401;
+                        context.Response.ContentType = "application/json";
+
+                        await context.Response.WriteAsync(JsonConvert.SerializeObject(new
+                        {
+                            State = "Unauthorized",
+                            Msg = "token expired"
+                        }));
+                    }
+                    //when orther error, retrun a error message json to client
+                    else if (error != null && error.Error != null)
+                    {
+                        context.Response.StatusCode = 500;
+                        context.Response.ContentType = "application/json";
+                        await context.Response.WriteAsync(JsonConvert.SerializeObject(new
+                        {
+                            State = "Internal Server Error",
+                            Msg = error.Error.Message
+                        }));
+                    }
+                    //when no error, do next.
+                    else await next();
+                });
+            });
             app.UseHttpsRedirection();
             app.UseSwagger();
             app.UseSwaggerUi3WithApiExplorer(settings =>
@@ -133,7 +177,7 @@ namespace CookBook.Api
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .AllowCredentials());
-            
+            app.UseAuthentication();
             app.UseMvc();
 
         }

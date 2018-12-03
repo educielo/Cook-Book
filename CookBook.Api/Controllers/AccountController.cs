@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using CookBook.Api.Models;
@@ -77,6 +78,31 @@ namespace CookBook.Web.Controllers
 
         private object GenerateJwtToken(string email, IdentityUser user)
         {
+            var handler = new JwtSecurityTokenHandler();
+            ClaimsIdentity identity = new ClaimsIdentity(
+                new GenericIdentity(user.Email, "Token"),
+                new[]
+                {
+                    new Claim("ID",user.Id.ToString())
+                }
+                );
+            var expires = DateTime.Now.AddDays(Convert.ToDouble(_configuration["JwtExpireDays"]));
+            var keyByteArray = Encoding.ASCII.GetBytes(_configuration["JwtKey"]);
+            var signingKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(keyByteArray);
+            var securityToken = handler.CreateToken(new SecurityTokenDescriptor
+            {
+                Issuer = _configuration["JwtIssuer"],
+                Audience = "Audience",
+                SigningCredentials = new SigningCredentials(signingKey,SecurityAlgorithms.HmacSha256),
+                Subject = identity,
+                Expires = expires,
+                NotBefore= DateTime.Now,
+            });
+
+
+
+
+
             var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Sub, email),
@@ -86,8 +112,6 @@ namespace CookBook.Web.Controllers
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtKey"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var expires = DateTime.Now.AddDays(Convert.ToDouble(_configuration["JwtExpireDays"]));
-
             var token = new JwtSecurityToken(
                 _configuration["JwtIssuer"],
                 _configuration["JwtIssuer"],
@@ -96,7 +120,7 @@ namespace CookBook.Web.Controllers
                 signingCredentials: creds
             );
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            return handler.WriteToken(securityToken);
         }
     }
 }
