@@ -37,12 +37,18 @@ namespace CookBook.Web.Controllers
         [Route("[action]")]
         public async Task<object> Login([FromBody] Login model)
         {
-            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, false, false);
+            var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, false, false);
 
             if (result.Succeeded)
             {
-                var appUser = _userManager.Users.SingleOrDefault(r => r.Email == model.Email);
-                return await GenerateJwtToken(model.Email, appUser);
+                var appUser = _userManager.Users.SingleOrDefault(r => r.Email == model.Username);
+                var user = new User()
+                {
+                    FullName = appUser.FullName,
+                    Email = appUser.Email,
+                    Token = GenerateJwtToken(model.Username, appUser).ToString()
+                };
+                return Ok(user);
             }
 
             throw new ApplicationException("INVALID_LOGIN_ATTEMPT");
@@ -63,13 +69,13 @@ namespace CookBook.Web.Controllers
             if (result.Succeeded)
             {
                 await _signInManager.SignInAsync(user, false);
-                return await GenerateJwtToken(model.Email, user);
+                return  GenerateJwtToken(model.Email, user);
             }
 
             throw new ApplicationException("UNKNOWN_ERROR");
         }
 
-        private async Task<object> GenerateJwtToken(string email, IdentityUser user)
+        private object GenerateJwtToken(string email, IdentityUser user)
         {
             var claims = new List<Claim>
             {

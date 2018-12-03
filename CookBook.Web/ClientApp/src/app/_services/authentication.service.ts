@@ -8,8 +8,9 @@ export class AuthenticationService {
     constructor(private http: HttpClient) { }
 
     login(username: string, password: string) {
-      return this.http.post<any>(`${environment.apiEndpoint}/users/authenticate`, { username, password })
-            .pipe(map(user => {
+      return this.http.post<any>(`${environment.apiEndpoint}account/login`, { username, password })
+        .pipe(map(user => {
+              console.log(user);
                 // login successful if there's a jwt token in the response
                 if (user && user.token) {
                     // store user details and jwt token in local storage to keep user logged in between page refreshes
