@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CookBook.Models.Migrations
 {
     [DbContext(typeof(CookBookContext))]
-    [Migration("20181201115945_Initial")]
-    partial class Initial
+    [Migration("20181204201848_Reseed")]
+    partial class Reseed
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -27,7 +27,11 @@ namespace CookBook.Models.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("Description");
+
                     b.Property<string>("IngredientName");
+
+                    b.Property<bool>("IsChecked");
 
                     b.Property<int>("RecipeId");
 

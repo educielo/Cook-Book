@@ -4,6 +4,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CookBook.Api.Initializer;
 using CookBook.Models;
 using CookBook.Models.Entities;
 using CookBook.Service;
@@ -117,11 +118,12 @@ namespace CookBook.Api
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env,
-            ApplicationDbContext dbContext)
+            ApplicationDbContext dbContext, UserManager<ApplicationUser> userManager)
         {
             if (env.IsDevelopment())
             {
                 dbContext.Database.EnsureCreated();
+                ApplicationDbInitializer.SeedUsers(userManager);
                 app.UseDeveloperExceptionPage();
             }
             else

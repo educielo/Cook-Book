@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace CookBook.Models.Migrations
 {
-    public partial class Initial : Migration
+    public partial class Reseed : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -31,7 +31,9 @@ namespace CookBook.Models.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     IngredientName = table.Column<string>(nullable: true),
-                    RecipeId = table.Column<int>(nullable: false)
+                    Description = table.Column<string>(nullable: true),
+                    RecipeId = table.Column<int>(nullable: false),
+                    IsChecked = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
