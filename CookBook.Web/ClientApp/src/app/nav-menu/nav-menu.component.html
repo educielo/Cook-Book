@@ -1,4 +1,4 @@
-<div class='main-nav'>
+<div *ngIf='isLoggedIn' class='main-nav'>
     <div class='navbar navbar-inverse'>
         <div class='navbar-header'>
             <button type='button' class='navbar-toggle' data-toggle='collapse' data-target='.navbar-collapse' [attr.aria-expanded]='isExpanded' (click)='toggle()'>
@@ -7,29 +7,32 @@
                 <span class='icon-bar'></span>
                 <span class='icon-bar'></span>
             </button>
-            <a class='navbar-brand' [routerLink]='["/"]'>CookBook.Web</a>
+            <a class='navbar-brand' [routerLink]='["/"]'>My Cookbook</a>
         </div>
         <div class='clearfix'></div>
         <div class='navbar-collapse collapse' [ngClass]='{ "in": isExpanded }'>
           <ul class='nav navbar-nav'>
             <li [routerLinkActive]='["link-active"]' [routerLinkActiveOptions]='{ exact: true }'>
               <a [routerLink]='["/"]' (click)='collapse()'>
-                <span class='glyphicon glyphicon-home'></span> Home
+                <span class='fa fa-home'></span> Home
               </a>
             </li>
+
             <li [routerLinkActive]='["link-active"]'>
-              <a [routerLink]='["/counter"]' (click)='collapse()'>
-                <span class='glyphicon glyphicon-education'></span> Counter
+              <a [routerLink]='["/add-recipe"]' (click)='collapse()'>
+                <span class='fa fa-plus'></span> Add a Recipe
               </a>
             </li>
-            <li [routerLinkActive]='["link-active"]'>
-              <a [routerLink]='["/recipes"]' (click)='collapse()'>
-                <span class='glyphicon glyphicon-th-list'></span> All Recipes
-              </a>
-            </li>
+
             <li [routerLinkActive]='["link-active"]'>
               <a [routerLink]='["/my-recipes"]' (click)='collapse()'>
-                <span class='glyphicon glyphicon-th-list'></span> My Recipes
+                <span class='fa fa-user'></span> My Recipes
+              </a>
+            </li>
+
+            <li [routerLinkActive]='["link-active"]'>
+              <a [routerLink]='["/my-cooklist"]' (click)='collapse()'>
+                <span class='fa fa-list'></span> My Cooklist
               </a>
             </li>
           </ul>

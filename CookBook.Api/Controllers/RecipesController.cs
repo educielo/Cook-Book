@@ -1,7 +1,9 @@
 ﻿using CookBook.Api.Models;
+using CookBook.Models;
 using CookBook.Service;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Repository.Pattern.UnitOfWork;
 using System;
@@ -20,36 +22,40 @@ namespace CookBook.Api.Controllers
     {
         private readonly IRecipeService _recipeService;
         private readonly IUnitOfWorkAsync _unitOfWorkAsync;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public RecipesController(IRecipeService recipeService, IUnitOfWorkAsync unitOfWorkAsync)
+        public RecipesController(IRecipeService recipeService, IUnitOfWorkAsync unitOfWorkAsync, UserManager<ApplicationUser> userManager)
         {
+            _userManager = userManager;
             _recipeService = recipeService;
             _unitOfWorkAsync = unitOfWorkAsync;
         }
 
         [HttpPost]
-        [Authorize]
         [Route("[action]")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> Create([FromBody] RecipeViewModel recipe)
         {
-            string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            string userId = User.Claims.First()?.Value;
+            var user = await _userManager.FindByNameAsync(userId);
             var newRecipe = new CookBook.Models.Entities.Recipe()
             {
                 RecipeName = recipe.RecipeName,
                 CreationDate = DateTime.Now,
                 Description = recipe.Description,
-                Creator = userId,
+                Creator = user?.FullName,
             };
             _recipeService.Insert(newRecipe);
             await _unitOfWorkAsync.SaveChangesAsync();
-            return Ok();
+            return Ok(new {message="Succesfully Created a recipe" });
         }
 
         [HttpGet]
         [Route("[action]")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]   
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> Delete(int recipeId)
         {
             var recipe = _recipeService.Find(recipeId);
@@ -67,6 +73,7 @@ namespace CookBook.Api.Controllers
         [Produces("application/json")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> Edit(int recipeId)
         {
             var recipe = await _recipeService.FindAsync(recipeId);
@@ -74,12 +81,19 @@ namespace CookBook.Api.Controllers
             {
                 return NotFound();
             }
+            var model = new RecipeViewModel();
+            model.RecipeName = recipe.RecipeName;
+            model.Id = recipe.Id;
+            model.Description = recipe.Description;
+            model.CreationDate = recipe.CreationDate.ToShortDateString();
+            
             return Ok(recipe);
         }
         [HttpPost]
         [Route("[action]")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> Update([FromBody] RecipeViewModel recipe)
         {
             if (recipe == null)
@@ -119,11 +133,18 @@ namespace CookBook.Api.Controllers
         [HttpGet]
         [Route("[action]")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public IActionResult GetMyRecipes()
+        public async Task<IActionResult> GetMyRecipes()
         {
             string userId = User.Claims.First()?.Value;
-            var recipes = _recipeService.Query(a=>a.Creator == userId).Select(a => new Recipe()
+            var user = await _userManager.FindByNameAsync(userId);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var recipes = _recipeService.Query(a=>a.Creator == user.FullName).Select(a => new Recipe()
             {
                 CreationDate = a.CreationDate.ToString(),
                 Creator = a.Creator,

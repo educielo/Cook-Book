@@ -28,6 +28,7 @@
 
   <ItemGroup>
     <None Remove="ClientApp\src\app\recipes\recipes.component.ts" />
+    <None Remove="ClientApp\src\app\_services\ingredient.service.ts" />
     <None Remove="ClientApp\src\app\_services\recipe.service.ts" />
   </ItemGroup>
 
@@ -37,6 +38,7 @@
 
   <ItemGroup>
     <TypeScriptCompile Include="ClientApp\src\app\recipes\recipes.component.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\_services\ingredient.service.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\_services\recipe.service.ts" />
   </ItemGroup>
 

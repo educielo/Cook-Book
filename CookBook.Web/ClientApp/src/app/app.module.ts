@@ -12,8 +12,11 @@ import { CounterComponent } from './counter/counter.component';
 import { LoginComponent } from './login';
 import { MyRecipeComponent } from './my-recipes/my-recipes.component';
 import { RecipeComponent } from './recipes/recipes.component';
+import { AddRecipeComponent } from './add-recipe/add-recipe.component';
+import { AddIngredientsComponent } from "./add-ingrdients/add-ingredients.component";
 import { routing } from './app.routing';
 import { JwtInterceptor, ErrorInterceptor } from './_helpers';
+import { CookComponent } from './cook/cook.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +26,10 @@ import { JwtInterceptor, ErrorInterceptor } from './_helpers';
     CounterComponent,
     LoginComponent,
     MyRecipeComponent,
-    RecipeComponent
+    RecipeComponent,
+    AddRecipeComponent,
+    CookComponent,
+    AddIngredientsComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),

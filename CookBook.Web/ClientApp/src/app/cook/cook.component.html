@@ -1,0 +1,38 @@
+<p *ngIf="!recipe"><em>Loading...</em></p>
+<div>
+  <h2>Recipe Name: {{recipe.recipeName}}</h2>
+  <h2>Recipe By: {{recipe.creator}}</h2>
+  <p>Description: {{recipe.description}}</p>
+</div>
+<div class="clearfix"></div>
+<div class="row">
+  <div class="col-md-12">
+    <h4>Checklist of Ingredients</h4>
+    <div class="table-responsive">
+      <table id="mytable" class="table table-bordred table-striped">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Ingredient Name</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of ingredients">
+            <td><input type="checkbox" /></td>
+            <td class="hidden-xs">{{ item.ingredientName }}</td>
+            <td>{{ item.description }}</td>
+          </tr>
+          <tr>
+            
+            
+          </tr>
+        </tbody>
+
+      </table>
+      
+
+    </div>
+
+  </div>
+</div>

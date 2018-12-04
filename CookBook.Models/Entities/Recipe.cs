@@ -17,6 +17,7 @@ namespace CookBook.Models.Entities
         //public Guid UserId { get; set; }
         public DateTime CreationDate { get; set; }
         public ICollection<Ingredient> Ingredients { get; set; }
+        //public ICollection<CheckList> CheckLists { get; set; }
         //public virtual ApplicationUser UserLinked { get; set; }
     }
 }

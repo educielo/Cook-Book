@@ -4,14 +4,16 @@ using CookBook.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CookBook.Models.Migrations
 {
     [DbContext(typeof(CookBookContext))]
-    partial class CookBookContextModelSnapshot : ModelSnapshot
+    [Migration("20181204164205_Ingredients")]
+    partial class Ingredients
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

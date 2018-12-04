@@ -20,4 +20,18 @@ export class MyRecipeComponent implements OnInit {
   ngOnInit() {
     this.recipeService.getMyRecipes().subscribe(res => this.recipes = res)
   }
+
+  delete(passedId) {
+    this.recipeService.delete(passedId).subscribe(result => {
+      let indexOfId = this.recipes.findIndex((eachEleme) => {
+        return eachEleme.id = passedId;
+      });
+
+      this.recipeService.getMyRecipes().subscribe(res => this.recipes = res)
+   
+    }, error => console.log('There was an error: ', error));
+  }
+  viewRecipe(recipeId) {
+
+  }
 }

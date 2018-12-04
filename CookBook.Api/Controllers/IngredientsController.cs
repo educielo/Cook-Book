@@ -31,10 +31,12 @@ namespace CookBook.Api.Controllers
             {
                 IngredientName = ingredient.IngredientName,
                 RecipeId = ingredient.RecipeId,
+                Description = ingredient.Description,
+
             };
             _ingredientService.Insert(newIngredient);
             await _unitOfWorkAsync.SaveChangesAsync();
-            return Ok();
+            return Ok(new { Message = "New ingredient added to your list" });
         }
 
         [HttpGet]
@@ -86,6 +88,7 @@ namespace CookBook.Api.Controllers
             }
             oldIngredient.IngredientName = ingredient.IngredientName;
             oldIngredient.RecipeId = ingredient.RecipeId;
+            oldIngredient.IsChecked = ingredient.IsChecked;
             oldIngredient.ObjectState = Repository.Pattern.Infrastracture.ObjectState.Modified;
             _ingredientService.Update(oldIngredient);
             await _unitOfWorkAsync.SaveChangesAsync();
@@ -95,9 +98,37 @@ namespace CookBook.Api.Controllers
         [HttpGet]
         [Route("[action]")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> SetChecked(int id, bool isChecked)
+        {
+            if (id == 0)
+            {
+                return NotFound();
+            }
+            var oldIngredient = await _ingredientService.FindAsync(id);
+            if (oldIngredient == null)
+            {
+                return NotFound();
+            }       
+            oldIngredient.IsChecked = isChecked;
+            oldIngredient.ObjectState = Repository.Pattern.Infrastracture.ObjectState.Modified;
+            _ingredientService.Update(oldIngredient);
+            await _unitOfWorkAsync.SaveChangesAsync();
+            return Ok(new {message="Ingredient marked as check!" });
+        }
+
+        [HttpGet]
+        [Route("[action]")]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
         public IActionResult GetIngredients(int recipeId)
         {
-            var ingredients=  _ingredientService.Query(a => a.RecipeId == recipeId).Select();
+            var ingredients=  _ingredientService.Query(a => a.RecipeId == recipeId).Select(a=>  new IngredientViewModel() {
+                Id = a.Id,
+                Description = a.Description,
+                IngredientName = a.IngredientName,
+                IsChecked = a.IsChecked,
+                RecipeId =a.RecipeId,
+            });
             return Ok(ingredients);
         }
 

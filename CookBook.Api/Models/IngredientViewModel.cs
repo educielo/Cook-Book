@@ -13,5 +13,8 @@ namespace CookBook.Api.Models
         public string IngredientName { get; set; }
         [Required]
         public int RecipeId { get; set; }
+        [Required]
+        public string Description { get; set; }
+        public bool IsChecked { get; set; }
     }
 }

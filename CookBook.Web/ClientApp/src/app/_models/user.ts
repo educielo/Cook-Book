@@ -16,5 +16,7 @@ export class Recipe {
 export class Ingredient {
   id: number;
   ingredientName: string;
+  description: string;
   recipeId: number;
+  isChecked: boolean;
 }
