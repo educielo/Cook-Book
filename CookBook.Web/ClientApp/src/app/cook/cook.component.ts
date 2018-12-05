@@ -9,7 +9,7 @@ import { Ingredient, Recipe } from '../_models';
 @Component({ templateUrl: 'cook.component.html' })
 export class CookComponent implements OnInit, OnDestroy {
   public ingredient: Ingredient;
-  public recipe: Recipe;
+  public recipe = new Recipe();
   public ingredients: Ingredient[];
   public recipeId: number;
   private sub: any;

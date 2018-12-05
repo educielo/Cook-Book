@@ -48,7 +48,7 @@ namespace CookBook.Api.Controllers
             };
             _recipeService.Insert(newRecipe);
             await _unitOfWorkAsync.SaveChangesAsync();
-            return Ok(new {message="Succesfully Created a recipe" });
+            return Ok(new {message="Succesfully added a recipe" });
         }
 
         [HttpGet]
@@ -115,6 +115,7 @@ namespace CookBook.Api.Controllers
         [HttpGet]
         [Route("[action]")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public IActionResult GetAllRecipes()
         {
             string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;

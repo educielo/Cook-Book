@@ -1,8 +1,8 @@
 <p *ngIf="!recipe"><em>Loading...</em></p>
 <div>
-  <h2>Recipe Name: {{recipe.recipeName}}</h2>
-  <h2>Recipe By: {{recipe.creator}}</h2>
-  <p>Description: {{recipe.description}}</p>
+  <h3>Recipe Name: {{recipe!.recipeName}}</h3>
+  <h4>Recipe By: {{recipe!.creator}}</h4>
+  <p>Description: {{recipe!.description}}</p>
 </div>
 <div class="clearfix"></div>
 <div class="row">

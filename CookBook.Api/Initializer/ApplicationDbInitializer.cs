@@ -11,26 +11,30 @@ namespace CookBook.Api.Initializer
     {
         public static void SeedUsers(UserManager<ApplicationUser> userManager)
         {
-            if (userManager.FindByEmailAsync("abc@xyz.com").Result == null)
+            var users = new List<ApplicationUser>()
             {
-                ApplicationUser nicole = new ApplicationUser
+                new ApplicationUser
                 {
                     UserName = "NicoleReyes@cookbook.com",
-                    FullName="Nicol Reyes",
+                    FullName="Nicole Reyes",
                     Email = "NicoleReyes@cookbook.com"
-                    
-                };
-                ApplicationUser paul = new ApplicationUser
+                },
+
+                 new ApplicationUser
                 {
                     UserName = "PaulSantos@cookbook.com",
                     Email = "PaulSantos@cookbook.com",
                     FullName = "John Paul Santos"
-                    
-                };
-                IdentityResult result2 = userManager.CreateAsync(nicole, "Nicole@123").Result;
+                },
 
-                IdentityResult result = userManager.CreateAsync(paul, "Paul@123").Result;
-                
+            };
+
+            foreach (var user in users)
+            {
+                if (userManager.FindByEmailAsync(user.Email).Result == null)
+                {
+                    IdentityResult result2 = userManager.CreateAsync(user, "Pass@123").Result;
+                }
             }
         }
     }

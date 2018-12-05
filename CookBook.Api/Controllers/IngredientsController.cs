@@ -1,7 +1,10 @@
 ﻿using CookBook.Api.Models;
 using CookBook.Models.Entities;
 using CookBook.Service;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Server.HttpSys;
 using Repository.Pattern.UnitOfWork;
 using System;
 using System.Collections.Generic;
@@ -25,6 +28,7 @@ namespace CookBook.Api.Controllers
         [HttpPost]
         [Route("[action]")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> Create([FromBody] IngredientViewModel ingredient)
         {
             var newIngredient = new Ingredient()
@@ -42,7 +46,8 @@ namespace CookBook.Api.Controllers
         [HttpGet]
         [Route("[action]")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]       
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> Delete(int ingredientId)
         {
             var recipe = _ingredientService.Find(ingredientId);
@@ -61,6 +66,7 @@ namespace CookBook.Api.Controllers
         [Produces("application/json")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> Edit(int ingredientId)
         {
             var recipe = await _ingredientService.FindAsync(ingredientId);
@@ -75,6 +81,7 @@ namespace CookBook.Api.Controllers
         [Route("[action]")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> Update([FromBody] IngredientViewModel ingredient)
         {
             if (ingredient == null)
@@ -99,6 +106,7 @@ namespace CookBook.Api.Controllers
         [Route("[action]")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> SetChecked(int id, bool isChecked)
         {
             if (id == 0)
@@ -120,6 +128,7 @@ namespace CookBook.Api.Controllers
         [HttpGet]
         [Route("[action]")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public IActionResult GetIngredients(int recipeId)
         {
             var ingredients=  _ingredientService.Query(a => a.RecipeId == recipeId).Select(a=>  new IngredientViewModel() {
@@ -135,6 +144,7 @@ namespace CookBook.Api.Controllers
         [HttpGet]
         [Route("[action]")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public IActionResult GetAllIngredients()
         {
             var ingredients = _ingredientService.Query().Include(a=>a.Recipe).Select(a=> new Ingredient() {
