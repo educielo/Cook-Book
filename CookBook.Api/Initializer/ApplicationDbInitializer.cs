@@ -19,14 +19,12 @@ namespace CookBook.Api.Initializer
                     FullName="Nicole Reyes",
                     Email = "NicoleReyes@cookbook.com"
                 },
-
                  new ApplicationUser
                 {
                     UserName = "PaulSantos@cookbook.com",
                     Email = "PaulSantos@cookbook.com",
                     FullName = "John Paul Santos"
                 },
-
             };
 
             foreach (var user in users)
