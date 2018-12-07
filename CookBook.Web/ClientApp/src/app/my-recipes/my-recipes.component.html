@@ -57,6 +57,7 @@
 </style>
 
 <div class="row">
+  <div *ngIf="message" class="alert alert-info">{{message}}</div>
   <div class="col-md-12">
     <h4>List of Ingredients</h4>
     <div class="table-responsive">
@@ -74,14 +75,14 @@
           <tr *ngFor="let recipe of recipes">
             <td>
               <a title="View Ingredient Checklist" [routerLink]="['/cook', recipe.id]" class="btn btn-default" style="margin-left:10px; margin-right:10px;">
-                <em class="fa fa-list" title="View this recipe"></em>
+                <em class="fa fa-list" title="View Ingredient Checklist"></em>
               </a>
               <a title="Manage Ingredients" [routerLink]="['/add-ingredients', recipe.id]" class="btn btn-default" style="margin-left:10px; margin-right:10px;">
-                <em class="fa fa-eye" title="View this recipe"></em>
+                <em class="fa fa-eye" title="Manage Ingredients"></em>
               </a>
               <a (click)="delete(recipe.id, idx)" class="btn btn-danger" title="Delete this recipe" style="margin-left:10px; margin-right:10px;"><em class="fa fa-trash"></em></a>
-            </td>      
-            
+            </td>
+
             <td>{{ recipe.recipeName }}</td>
             <td>{{ recipe.description }}</td>
             <td>{{ recipe.creator }}</td>

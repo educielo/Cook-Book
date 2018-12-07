@@ -25,7 +25,7 @@ export class RecipeService {
   }
 
   delete(recipeId: number) {
-    return this.http.get<Recipe>(`${environment.apiEndpoint}recipes/delete`, {
+    return this.http.get<any>(`${environment.apiEndpoint}recipes/delete`, {
       params: {
         recipeId: recipeId.toString(),
       }

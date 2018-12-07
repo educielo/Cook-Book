@@ -66,27 +66,33 @@ namespace CookBook.Api.Controllers
             _recipeService.Delete(recipeId);
            
             await _unitOfWorkAsync.SaveChangesAsync();
-            return Ok();
+            return Ok(new { message = "Succesfully deleted a recipe!" });
         }
         [HttpGet]
         [Route("[action]")]
         [Produces("application/json")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> Edit(int recipeId)
         {
+            string userId = User.Claims.First()?.Value;
+            var user = await _userManager.FindByNameAsync(userId);
+            if (user == null)
+                return NotFound();          
             var recipe = await _recipeService.FindAsync(recipeId);
             if (recipe == null)
-            {
                 return NotFound();
-            }
-            var model = new RecipeViewModel();
-            model.RecipeName = recipe.RecipeName;
-            model.Id = recipe.Id;
-            model.Description = recipe.Description;
-            model.CreationDate = recipe.CreationDate.ToShortDateString();
-            
+            if (user.FullName != recipe.Creator)
+                return BadRequest(new { message = "Not your recipe!" });
+            var model = new RecipeViewModel
+            {
+                RecipeName = recipe.RecipeName,
+                Id = recipe.Id,
+                Description = recipe.Description,
+                CreationDate = recipe.CreationDate.ToShortDateString()
+            };
             return Ok(recipe);
         }
         [HttpPost]
@@ -147,7 +153,7 @@ namespace CookBook.Api.Controllers
 
             var recipes = _recipeService.Query(a=>a.Creator == user.FullName).Select(a => new Recipe()
             {
-                CreationDate = a.CreationDate.ToString(),
+                CreationDate = a.CreationDate.ToString("mm/dd/yyyy"),
                 Creator = a.Creator,
                 Description = a.Description,
                 Id = a.Id,

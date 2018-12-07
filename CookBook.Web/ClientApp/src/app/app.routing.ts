@@ -14,7 +14,7 @@ const appRoutes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'add-recipe', component: AddRecipeComponent, canActivate: [AuthGuard] },
   { path: 'my-recipes', component: MyRecipeComponent, canActivate: [AuthGuard] },
-  { path: '', component: HomeComponent, canActivate: [AuthGuard] },
+  { path: '', component: HomeComponent},
   { path: 'add-ingredients/:id', component: AddIngredientsComponent, canActivate: [AuthGuard] },
   { path: 'cook/:id', component: CookComponent, canActivate: [AuthGuard] },
     // otherwise redirect to home

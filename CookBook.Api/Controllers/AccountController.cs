@@ -59,20 +59,26 @@ namespace CookBook.Web.Controllers
         [Route("[action]")]
         public async Task<object> Register([FromBody] Register model)
         {
-            var user = new ApplicationUser
+            var newUser = new ApplicationUser
             {
                 UserName = model.Email,
                 FullName = model.FullName,
                 Email = model.Email
             };
-            var result = await _userManager.CreateAsync(user, model.Password);
+            var result = await _userManager.CreateAsync(newUser, model.Password);
 
             if (result.Succeeded)
             {
-                await _signInManager.SignInAsync(user, false);
-                return  GenerateJwtToken(model.Email, user);
+                await _signInManager.SignInAsync(newUser, false);
+                var appUser = _userManager.Users.SingleOrDefault(r => r.Email == model.Email);
+                var user = new User()
+                {
+                    FullName = appUser.FullName,
+                    Email = appUser.Email,
+                    Token = GenerateJwtToken(appUser.UserName, appUser).ToString()
+                };
+                return Ok(user);
             }
-
             throw new ApplicationException("UNKNOWN_ERROR");
         }
 

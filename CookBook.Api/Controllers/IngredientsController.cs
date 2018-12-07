@@ -1,8 +1,10 @@
 ﻿using CookBook.Api.Models;
+using CookBook.Models;
 using CookBook.Models.Entities;
 using CookBook.Service;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Server.HttpSys;
 using Repository.Pattern.UnitOfWork;
@@ -19,10 +21,16 @@ namespace CookBook.Api.Controllers
     {
         private readonly IUnitOfWorkAsync _unitOfWorkAsync;
         private readonly IIngredientService _ingredientService;
-        public IngredientsController(IUnitOfWorkAsync unitOfWorkAsync, IIngredientService ingredientService)
+        private readonly IRecipeService _recipeService;
+        private readonly UserManager<ApplicationUser> _userManager;
+
+        public IngredientsController(IUnitOfWorkAsync unitOfWorkAsync, IIngredientService ingredientService,
+            IRecipeService recipeService, UserManager<ApplicationUser> userManager)
         {
             _unitOfWorkAsync = unitOfWorkAsync;
             _ingredientService = ingredientService;
+            _recipeService = recipeService;
+            _userManager = userManager;
         }
 
         [HttpPost]
@@ -58,7 +66,7 @@ namespace CookBook.Api.Controllers
             _ingredientService.Delete(ingredientId);
 
             await _unitOfWorkAsync.SaveChangesAsync();
-            return Ok();
+            return Ok(new { Message = "An ingredient has been deleted from your list!" });
         }
 
         [HttpGet]
@@ -128,9 +136,19 @@ namespace CookBook.Api.Controllers
         [HttpGet]
         [Route("[action]")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public IActionResult GetIngredients(int recipeId)
+        public async Task<IActionResult> GetIngredients(int recipeId)
         {
+            string userId = User.Claims.First()?.Value;
+            var user = await _userManager.FindByNameAsync(userId);
+            if (user == null)
+                return NotFound();
+            var recipe = await _recipeService.FindAsync(recipeId);
+            if (recipe == null)
+                return NotFound();
+            if (user.FullName != recipe.Creator)
+                return BadRequest(new { message="Not your recipe!"});
             var ingredients=  _ingredientService.Query(a => a.RecipeId == recipeId).Select(a=>  new IngredientViewModel() {
                 Id = a.Id,
                 Description = a.Description,

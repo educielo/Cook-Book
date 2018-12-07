@@ -25,7 +25,7 @@ export class IngredientService {
   }
 
   delete(ingredientId: number) {
-    return this.http.get<Ingredient>(`${environment.apiEndpoint}ingredients/delete`, {
+    return this.http.get<any>(`${environment.apiEndpoint}ingredients/delete`, {
       params: {
         ingredientId: ingredientId.toString(),
       }

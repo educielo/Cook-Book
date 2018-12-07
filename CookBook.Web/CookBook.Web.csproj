@@ -30,6 +30,9 @@
     <None Remove="ClientApp\src\app\recipes\recipes.component.ts" />
     <None Remove="ClientApp\src\app\_services\ingredient.service.ts" />
     <None Remove="ClientApp\src\app\_services\recipe.service.ts" />
+    <None Remove="ClientApp\src\app\_validators\email.validator.ts" />
+    <None Remove="ClientApp\src\app\_validators\index.ts" />
+    <None Remove="ClientApp\src\app\_validators\password.validator.ts" />
   </ItemGroup>
 
   <ItemGroup>
@@ -40,6 +43,9 @@
     <TypeScriptCompile Include="ClientApp\src\app\recipes\recipes.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\_services\ingredient.service.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\_services\recipe.service.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\_validators\email.validator.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\_validators\index.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\_validators\password.validator.ts" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

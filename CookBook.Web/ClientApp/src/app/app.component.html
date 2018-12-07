@@ -4,6 +4,9 @@
       <app-nav-menu></app-nav-menu>
     </div>
     <div class='col-sm-9 body-content'>
+      <nav class="navbar navbar-light bg-light pull-right">
+          <button class="btn btn-sm btn-outline-secondary" title="Log out"  [routerLink]="['/login']" type="button" style="margin:10px;"><span class="fa fa-arrow-circle-right"></span></button>
+      </nav>
       <router-outlet></router-outlet>
     </div>
   </div>

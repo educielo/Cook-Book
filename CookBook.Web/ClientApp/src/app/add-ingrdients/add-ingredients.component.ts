@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { first } from 'rxjs/operators';
@@ -14,12 +14,12 @@ export class AddIngredientsComponent implements OnInit, OnDestroy {
   public recipeId: number;
   private sub: any;
   ingredientForm: FormGroup;
-
   loading = false;
   submitted = false;
   addForm: boolean;
   error = '';
   message = '';
+  deleteMessage = '';
 
   constructor(
     private formBuilder: FormBuilder,
@@ -31,17 +31,16 @@ export class AddIngredientsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.sub = this.route.params.subscribe(params => {
       this.recipeId = +params['id'];
-      this.recipeService.find(this.recipeId).subscribe(res => {
-        if (res) {
-          this.recipe = res;
-        }
-      });
+      this.recipeService.find(this.recipeId)
+        .subscribe(res =>
+        {
+          if (res) {
+            this.recipe = res;
+          }
+        },err => console.log(err)
+        );
     });
-
-
-
     this.ingredientService.getIngredientsByRecipe(this.recipeId).subscribe(res => this.ingredients = res);
-
     this.ingredientForm = this.formBuilder.group({
       name: ['', Validators.required],
       description: ['', Validators.required]
@@ -75,14 +74,12 @@ export class AddIngredientsComponent implements OnInit, OnDestroy {
         data => {
           this.message = data.message;
           this.loading = false;
-          this.ingredientForm.reset();
-          for (var name in this.ingredientForm.controls) {
-            this.ingredientForm.controls[name].setErrors(null);
-          }
-          this.ingredientForm = this.formBuilder.group({
-            name: ['', Validators.required],
-            description: ['', Validators.required]
-          });
+          this.ingredientForm.reset();                          
+          //this.ingredientForm = this.formBuilder.group({
+          //  name: ['', Validators.required],
+          //  description: ['', Validators.required]
+          //});
+          //this.ingredientForm.markAsPristine();    
           this.ingredientService.getIngredientsByRecipe(this.recipeId).subscribe(res => this.ingredients = res);
         },
 
@@ -92,6 +89,9 @@ export class AddIngredientsComponent implements OnInit, OnDestroy {
           this.loading = false;
         });
     this.ingredientService.getIngredientsByRecipe(this.recipeId).subscribe(res => this.ingredients = res);
+    setTimeout(() => {
+      this.message = '';
+    }, 3000)
   }
 
   changeState(event: any, id: number) {
@@ -109,7 +109,11 @@ export class AddIngredientsComponent implements OnInit, OnDestroy {
 
   delete(passedId) {
     this.ingredientService.delete(passedId).subscribe(result => {
+      this.deleteMessage = result.message;
       this.ingredientService.getIngredientsByRecipe(this.recipeId).subscribe(res => this.ingredients = res);
     }, error => console.log('There was an error: ', error));
+    setTimeout(() => {
+      this.deleteMessage = '';
+    }, 3000);
   }
 }
