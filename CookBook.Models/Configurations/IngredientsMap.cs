@@ -14,6 +14,7 @@ namespace CookBook.Models.Configurations
 
             builder.ToTable("Ingredients")
                 .HasKey(a => a.Id);
+
             builder.HasOne(a => a.Recipe)
                 .WithMany(a => a.Ingredients)
                 .HasForeignKey(a => a.RecipeId);

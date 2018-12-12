@@ -57,7 +57,7 @@
       <table id="mytable" class="table table-bordred table-striped">
         <thead>
           <tr>
-            <!--<th></th>-->
+            <th></th>
             <th>Ingredient Name</th>
             <th>Description</th>
             <th>Delete</th>
@@ -65,7 +65,7 @@
         </thead>
         <tbody>
           <tr *ngFor="let item of ingredients">
-            <!--<td><input type="checkbox" [checked]="item.isChecked" class="checkthis" (change)="changeState($event,item.id)" /></td>-->
+            <td><input type="checkbox" [checked]="item.isChecked" class="checkthis" (change)="changeState($event,item.id)" /></td>
             <td class="hidden-xs">{{ item.ingredientName }}</td>
             <td>{{ item.description }}</td>
             <td><p data-placement="top" data-toggle="tooltip" title="Delete"><button (click)="delete(item.id)" class="btn btn-danger btn-xs" data-title="Delete"><span class="fa fa-trash"></span></button></p></td>

@@ -23,6 +23,7 @@ export class MyRecipeComponent implements OnInit {
   }
 
   delete(passedId) {
+    debugger;
     this.recipeService.delete(passedId).subscribe(result => {
       let indexOfId = this.recipes.findIndex((eachEleme) => {
         return eachEleme.id = passedId;

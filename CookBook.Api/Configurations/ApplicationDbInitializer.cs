@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace CookBook.Api.Initializer
+namespace CookBook.Api.Configurations
 {
     public static class ApplicationDbInitializer
     {

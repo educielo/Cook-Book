@@ -59,10 +59,17 @@ namespace CookBook.Api.Controllers
         public async Task<IActionResult> Delete(int recipeId)
         {
             var recipe = _recipeService.Find(recipeId);
+            string userId = User.Claims.First()?.Value;
+            var user = await _userManager.FindByNameAsync(userId);
+            if (user == null)
+             return NotFound();
+
             if (recipe == null)
-            {
                 return NotFound();
-            }
+
+            if (recipe.Creator != user.FullName)
+                return NotFound(new { message = "Not your recipe!" });
+                     
             _recipeService.Delete(recipeId);
            
             await _unitOfWorkAsync.SaveChangesAsync();
