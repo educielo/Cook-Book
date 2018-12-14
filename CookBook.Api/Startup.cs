@@ -19,8 +19,7 @@ namespace CookBook.Api
         }
 
         public IConfiguration Configuration { get; }
-
-        // This method gets called by the runtime. Use this method to add services to the container.
+        
         public void ConfigureServices(IServiceCollection services)
         {
             //-- DbContexts--//
@@ -34,14 +33,19 @@ namespace CookBook.Api
                 options.User.RequireUniqueEmail = true;
             }).AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
             services.AddHttpContextAccessor();
+
             //-- Services and Repositories--//                    
             services.ConfigureServices();
+
             //--Configure CORS on the CorsConfig
-            services.ConfigureCors();          
+            services.ConfigureCors();        
+            
             // ===== Add Jwt Authentication ========
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
             services.ConfigureJwt(Configuration["JwtKey"], Configuration["JwtIssuer"]);
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
             //== Configure other Middlewares
             services.ConfigureMiddlewares();
         }
